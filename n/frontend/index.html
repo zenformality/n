@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>n - AI Assistant</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="n-container">
+        <header class="n-header">
+            <div class="n-logo">
+                <span class="n-icon">◈</span>
+                <h1>n</h1>
+                <span class="n-status" id="status-indicator">ONLINE</span>
+            </div>
+            <div class="n-time" id="current-time">00:00:00</div>
+        </header>
+
+        <main class="n-main">
+            <aside class="n-sidebar">
+                <nav class="n-nav">
+                    <button class="nav-btn active" data-section="chat">
+                        <span class="nav-icon">💬</span>
+                        <span class="nav-label">Chat</span>
+                    </button>
+                    <button class="nav-btn" data-section="terminal">
+                        <span class="nav-icon">⌨</span>
+                        <span class="nav-label">Terminal</span>
+                    </button>
+                    <button class="nav-btn" data-section="system">
+                        <span class="nav-icon">⚙</span>
+                        <span class="nav-label">System</span>
+                    </button>
+                    <button class="nav-btn" data-section="files">
+                        <span class="nav-icon">📁</span>
+                        <span class="nav-label">Files</span>
+                    </button>
+                </nav>
+            </aside>
+
+            <section class="n-content">
+                <div class="section active" id="chat-section">
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chat-messages">
+                            <div class="message n-message">
+                                <div class="message-avatar">n</div>
+                                <div class="message-content">
+                                    <p>Greetings. I am n, your AI assistant. I have full control over this Arch Linux system and can assist you with any task.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input-area">
+                            <input type="text" id="chat-input" placeholder="Ask n anything..." autocomplete="off">
+                            <button id="chat-send" class="n-btn">▶</button>
+                            <button id="voice-btn" class="n-btn">🎤</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" id="terminal-section">
+                    <div class="terminal-container">
+                        <div class="terminal-output" id="terminal-output">
+                            <div class="terminal-line">n:~$ Welcome to n Terminal</div>
+                            <div class="terminal-line">Type 'help' for available commands</div>
+                        </div>
+                        <div class="terminal-input-area">
+                            <span class="terminal-prompt">n:~$</span>
+                            <input type="text" id="terminal-input" placeholder="Enter command..." autocomplete="off">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" id="system-section">
+                    <div class="system-grid">
+                        <div class="system-card">
+                            <h3>System Info</h3>
+                            <div id="system-info">
+                                <div class="loading">Loading...</div>
+                            </div>
+                        </div>
+                        <div class="system-card">
+                            <h3>CPU</h3>
+                            <div id="cpu-usage">Loading...</div>
+                        </div>
+                        <div class="system-card">
+                            <h3>Memory</h3>
+                            <div id="memory-usage">Loading...</div>
+                        </div>
+                        <div class="system-card">
+                            <h3>Disk</h3>
+                            <div id="disk-usage">Loading...</div>
+                        </div>
+                        <div class="system-card">
+                            <h3>Processes</h3>
+                            <div id="processes-list">Loading...</div>
+                        </div>
+                        <div class="system-card">
+                            <h3>Packages</h3>
+                            <div id="packages-count">Loading...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section" id="files-section">
+                    <div class="files-container">
+                        <div class="file-manager">
+                            <div class="file-header">
+                                <input type="text" id="file-path" value="/" placeholder="Path">
+                                <button id="file-read" class="n-btn">Read</button>
+                                <button id="file-upload" class="n-btn">Upload</button>
+                                <input type="file" id="file-upload-input" hidden>
+                            </div>
+                            <div class="file-content" id="file-content">
+                                <p>Select a file to view or enter a path above</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <footer class="n-footer">
+            <div class="n-footer-content">
+                <span>n v1.0.0 | Arch Linux Compatible</span>
+                <span id="connection-status">Connected</span>
+            </div>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
