@@ -5,14 +5,20 @@ import asyncio
 import shutil
 import psutil
 import platform
+import tempfile
+import uuid
 from datetime import datetime
 from typing import Optional, Dict, Any, List
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from fastapi.background import BackgroundTask
 from pydantic import BaseModel
 import httpx
 import aiofiles
+import pyttsx3
+from concurrent.futures import ThreadPoolExecutor
 
 app = FastAPI(title="n - AI Assistant")
 
@@ -33,6 +39,36 @@ You can execute commands, manage files, install packages, and control the system
 When asked to do something, respond with a natural language confirmation and then execute the action.
 For system operations, use bash commands. For Arch Linux, use pacman, yay, or paru for packages.
 Always provide clear, professional responses."""
+
+tts_executor = ThreadPoolExecutor(max_workers=1)
+
+
+def synthesize_speech_sync(text: str) -> Optional[str]:
+    try:
+        engine = pyttsx3.init()
+        engine.setProperty('rate', 170)
+        engine.setProperty('volume', 1.0)
+        
+        voices = engine.getProperty('voices')
+        for voice in voices:
+            if 'english' in voice.name.lower():
+                engine.setProperty('voice', voice.id)
+                break
+        
+        output_path = f"/tmp/n_tts_{uuid.uuid4().hex}.wav"
+        engine.save_to_file(text, output_path)
+        engine.runAndWait()
+        engine.stop()
+        
+        if os.path.exists(output_path) and os.path.getsize(output_path) > 0:
+            return output_path
+    except Exception as e:
+        print(f"TTS error: {e}")
+    return None
+
+
+class TTSRequest(BaseModel):
+    text: str
 
 
 class CommandRequest(BaseModel):
@@ -193,6 +229,22 @@ async def chat(request: ChatRequest):
             "response": f"Command executed: {request.message}\nAI service not configured. Set OPENCODE_ZEN_KEY environment variable.",
             "mode": "fallback"
         }
+
+
+@app.post("/api/tts")
+async def text_to_speech(request: TTSRequest):
+    loop = asyncio.get_event_loop()
+    audio_path = await loop.run_in_executor(tts_executor, synthesize_speech_sync, request.text)
+    
+    if audio_path:
+        return FileResponse(
+            path=audio_path,
+            media_type="audio/wav",
+            filename="n_speech.wav",
+            background=BackgroundTask(os.remove, audio_path)
+        )
+    else:
+        raise HTTPException(status_code=500, detail="TTS synthesis failed")
 
 
 @app.post("/api/install")

@@ -11,6 +11,7 @@ A sophisticated web-based AI assistant for Arch Linux, similar to JARVIS and ULT
 - **File Management**: Read, write, upload, and delete files
 - **Web Search**: Built-in web search capabilities
 - **Voice Input**: Speech-to-text support
+- **Voice Output (TTS)**: Text-to-speech for AI responses using Web Speech API
 - **Arch Linux Compatible**: Designed specifically for Arch Linux environments
 
 ## Requirements
@@ -79,6 +80,7 @@ n/
 - `GET /api/status` - System status and info
 - `POST /api/command` - Execute system command
 - `POST /api/chat` - Chat with AI
+- `POST /api/tts` - Text-to-speech synthesis
 - `POST /api/install` - Install package
 - `POST /api/remove` - Remove package
 - `POST /api/update` - Update system

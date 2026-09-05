@@ -4,6 +4,8 @@ class nAssistant {
         this.apiBase = 'http://localhost:8000/api';
         this.currentSection = 'chat';
         this.isConnected = false;
+        this.ttsEnabled = false;
+        this.speakerButtonEnabled = true;
         
         this.init();
     }
@@ -15,6 +17,7 @@ class nAssistant {
         this.setupTerminal();
         this.setupSystem();
         this.setupFiles();
+        this.setupTTS();
         this.updateTime();
         setInterval(() => this.updateTime(), 1000);
         
@@ -244,18 +247,75 @@ class nAssistant {
         });
     }
 
+    setupTTS() {
+        const ttsToggle = document.getElementById('tts-toggle');
+        if (!ttsToggle) return;
+        
+        ttsToggle.addEventListener('click', () => {
+            this.ttsEnabled = !this.ttsEnabled;
+            ttsToggle.style.background = this.ttsEnabled 
+                ? 'linear-gradient(135deg, #00ff88, #00d4ff)' 
+                : '';
+            ttsToggle.textContent = this.ttsEnabled ? '🔇' : '🔊';
+        });
+    }
+
+    async speakText(text) {
+        if (!this.ttsEnabled) return;
+        
+        const cleanText = text.replace(/[`*_~]/g, '').substring(0, 500);
+        if (!cleanText) return;
+        
+        try {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(cleanText);
+                utterance.rate = 1.0;
+                utterance.pitch = 0.9;
+                utterance.volume = 1.0;
+                
+                const voices = speechSynthesis.getVoices();
+                const preferredVoice = voices.find(voice => 
+                    voice.lang.startsWith('en') && voice.name.includes('Google')
+                ) || voices.find(voice => voice.lang.startsWith('en'));
+                if (preferredVoice) utterance.voice = preferredVoice;
+                
+                speechSynthesis.cancel();
+                speechSynthesis.speak(utterance);
+            }
+        } catch (error) {
+            console.error('TTS error:', error);
+        }
+    }
+
     displayChatMessage(message, sender, isError = false) {
         const messagesContainer = document.getElementById('chat-messages');
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${sender === 'user' ? 'user-message' : 'n-message'} ${isError ? 'error-message' : ''}`;
         
+        const speakerButton = this.speakerButtonEnabled ? 
+            `<button class="speak-btn" data-message="${this.escapeHtml(message)}">🔊</button>` : '';
+        
         messageDiv.innerHTML = `
             <div class="message-avatar">${sender === 'user' ? 'U' : 'n'}</div>
-            <div class="message-content"><p>${this.escapeHtml(message)}</p></div>
+            <div class="message-content">
+                <p>${this.escapeHtml(message)}</p>
+                ${sender === 'n' ? speakerButton : ''}
+            </div>
         `;
         
         messagesContainer.appendChild(messageDiv);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        
+        if (sender === 'n' && this.ttsEnabled) {
+            this.speakText(message);
+        }
+        
+        const speakBtn = messageDiv.querySelector('.speak-btn');
+        if (speakBtn) {
+            speakBtn.addEventListener('click', () => {
+                this.speakText(speakBtn.dataset.message);
+            });
+        }
     }
 
     addTerminalLine(text, isError = false) {
