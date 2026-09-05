@@ -11,6 +11,7 @@ A sophisticated web-based AI assistant for Arch Linux, similar to JARVIS and ULT
 - **File Management**: Read, write, upload, and delete files
 - **Web Search**: Built-in web search capabilities
 - **Voice Input**: Speech-to-text support
+- **Voice Output (TTS)**: Text-to-speech for AI responses using Web Speech API
 - **Arch Linux Compatible**: Designed specifically for Arch Linux environments
 
 ## Requirements
@@ -47,19 +48,7 @@ cd backend
 python server.py
 ```
 
-The server will start at `http://localhost:8000`
-
-### 4. Access the Interface
-
-Open your browser and navigate to `http://localhost:8000` or serve the frontend:
-
-```bash
-# Serve frontend
-cd frontend
-python -m http.server 8080
-```
-
-Then open `http://localhost:8080`
+The server serves both the API and web interface at `http://localhost:8000`
 
 ## Architecture
 
@@ -79,6 +68,7 @@ n/
 - `GET /api/status` - System status and info
 - `POST /api/command` - Execute system command
 - `POST /api/chat` - Chat with AI
+- `POST /api/tts` - Text-to-speech synthesis
 - `POST /api/install` - Install package
 - `POST /api/remove` - Remove package
 - `POST /api/update` - Update system
