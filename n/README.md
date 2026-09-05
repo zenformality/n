@@ -48,19 +48,7 @@ cd backend
 python server.py
 ```
 
-The server will start at `http://localhost:8000`
-
-### 4. Access the Interface
-
-Open your browser and navigate to `http://localhost:8000` or serve the frontend:
-
-```bash
-# Serve frontend
-cd frontend
-python -m http.server 8080
-```
-
-Then open `http://localhost:8080`
+The server serves both the API and web interface at `http://localhost:8000`
 
 ## Architecture
 

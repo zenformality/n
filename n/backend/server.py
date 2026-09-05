@@ -9,7 +9,7 @@ import tempfile
 import uuid
 from datetime import datetime
 from typing import Optional, Dict, Any, List
-from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File, HTTPException
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect, UploadFile, File, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -29,6 +29,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+frontend_dir = os.path.join(os.path.dirname(__file__), "..", "frontend")
+if os.path.isdir(frontend_dir):
+    app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
 
 OPENCODE_ZEN_API = os.getenv("OPENCODE_ZEN_API", "https://api.opencode.ai/v1/chat/completions")
 OPENCODE_ZEN_KEY = os.getenv("OPENCODE_ZEN_KEY", "")
@@ -404,6 +408,17 @@ async def websocket_endpoint(websocket: WebSocket):
 
 @app.get("/")
 async def root():
+    return {"message": "n - AI Assistant API", "version": "1.0.0"}
+
+
+@app.get("/{full_path:path}")
+async def serve_frontend(request: Request, full_path: str):
+    file_path = os.path.join(frontend_dir, full_path)
+    if full_path and os.path.isfile(file_path):
+        return FileResponse(file_path)
+    index_path = os.path.join(frontend_dir, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
     return {"message": "n - AI Assistant API", "version": "1.0.0"}
 
 

@@ -1,7 +1,7 @@
 class nAssistant {
     constructor() {
         this.ws = null;
-        this.apiBase = 'http://localhost:8000/api';
+        this.apiBase = '/api';
         this.currentSection = 'chat';
         this.isConnected = false;
         this.ttsEnabled = false;
@@ -28,7 +28,7 @@ class nAssistant {
     }
 
     connectWebSocket() {
-        const wsUrl = `ws://${window.location.hostname}:8000/ws`;
+        const wsUrl = `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.host}/ws`;
         try {
             this.ws = new WebSocket(wsUrl);
             
